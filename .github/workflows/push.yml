@@ -8,9 +8,9 @@ jobs:
       fail-fast: false
       matrix:
         handler: [true]
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        try: [0,1,2,3,4,5,6,7]
-        dotnet-version: [3.1.x]
+        os: [ubuntu-latest]
+        try: [0,1,2,3]
+        dotnet-version: [1.0.x,1.1.x,2.0.x,2.1.x,3.0.x,3.1.x,5.0.x]
     
     runs-on: macos-latest
 
@@ -25,7 +25,7 @@ jobs:
         dotnet-version: ${{ matrix.dotnet-version }} # SDK Version to use.
         source-url: ${{ env.SOURCE }}
       env:
-        NUGET_AUTH_TOKEN: '%NUGET_AUTH_TOKEN%'
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
      
     - run: |
         dotnet new console
@@ -35,5 +35,4 @@ jobs:
       run: |
         dotnet nuget push bin/Debug/*.nupkg -s ${{ env.SOURCE }}
       env:
-        NUGET_AUTH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: ${{ matrix.handler }}
