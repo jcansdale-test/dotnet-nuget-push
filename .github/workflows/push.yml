@@ -1,0 +1,39 @@
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  push:
+    strategy:
+      fail-fast: false
+      matrix:
+        handler: [true]
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        try: [0,1,2,3,4,5,6,7]
+        dotnet-version: [3.1.x]
+    
+    runs-on: macos-latest
+
+    env:
+      SOURCE: "https://nuget.pkg.github.com/${{github.repository_owner}}/index.json"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }} # SDK Version to use.
+        source-url: ${{ env.SOURCE }}
+      env:
+        NUGET_AUTH_TOKEN: '%NUGET_AUTH_TOKEN%'
+     
+    - run: |
+        dotnet new console
+        dotnet pack -p:RepositoryUrl=${{ github.server_url }}/${{ github.repository }} -p:Version=1.0.0-g${{ github.sha }}-${{ strategy.job-index }}
+       
+    - name: Publish package
+      run: |
+        dotnet nuget push bin/Debug/*.nupkg -s ${{ env.SOURCE }}
+      env:
+        NUGET_AUTH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: ${{ matrix.handler }}
