@@ -2,12 +2,18 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  # Set the DOTNET_SKIP_FIRST_TIME_EXPERIENCE environment variable to stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   push:
     strategy:
       fail-fast: false
       matrix:
-        dotnet-version: [1.0.x,1.1.x,2.0.x,2.1.x,3.0.x,3.1.x,5.0.x]
+        dotnet-version: [1.1.x,2.0.x,2.1.x,3.0.x,3.1.x]
         handler: [true]
         os: [ubuntu-latest]
         try: [0,1,2,3]
