@@ -27,7 +27,6 @@ jobs:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
      
     - run: |
-        dotnet new console
         dotnet pack -p:RepositoryUrl=${{ github.server_url }}/${{ github.repository }} -p:Version=1.0.0-g${{ github.sha }}-${{ strategy.job-index }}
        
     - name: Publish package
